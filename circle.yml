@@ -1,0 +1,24 @@
+machine:
+  php:
+    version: '7.0.4'
+  ruby:
+    version: '2.3'
+
+dependencies:
+  override:
+    - composer install --no-interaction --no-ansi --no-progress --no-suggest --no-scripts --optimize-autoloader
+  post:
+    - cp -v .env.example .env
+    - php artisan key:generate
+
+test:
+  override:
+    - vendor/bin/phpunit
+  post:
+    - ssh-add $HOME/.ssh/id_circleci_github
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - vendor/bin/dep deploy
